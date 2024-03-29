@@ -69,6 +69,25 @@ def post_to_db(post_name, post_price, post_details, customer_id):
     cur.close()
     conn.close()
 
+# выдаем все посты пользователя
+def get_my_posts(customer_id):
+    conn = psycopg2.connect(
+        dbname=db_name,
+        user=db_user,
+        password=db_password,
+        host=db_host,
+        port=db_port
+    )
+    cur = conn.cursor()
+    # Вставляем запись о посте в таблицу posts
+    customer_id = str(customer_id)
+    cur.execute("SELECT publication_name, details, price, status FROM posts WHERE customer_id = %s", (customer_id,))
+    rows = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return rows
 
 def get_post_info():
     pass

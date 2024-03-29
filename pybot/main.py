@@ -1,11 +1,9 @@
 import os
-import sqlite3
 
 import telebot
 from dotenv import load_dotenv
-from telebot import types
 
-from utils import generate_keyboard_buttons, main_buttons, tables_creation, post_to_db
+from utils import generate_keyboard_buttons, main_buttons, tables_creation, post_to_db, get_my_posts
 
 load_dotenv()
 SECRET_ID = os.getenv('TELEGRAM_BOT_ID')
@@ -28,8 +26,7 @@ def post_keybord_buttons(сallback):
         bot.send_message(сallback.chat.id, 'Яка назва буде у вашого поста❓')
         bot.register_next_step_handler(сallback, get_name_for_post)
     elif сallback.text == 'Мої пости🎒':
-        bot.send_message(сallback.chat.id, 'Мої пости🎒')
-        bot.register_next_step_handler(сallback, post_keybord_buttons)
+        show_user_posts(сallback)
     elif сallback.text == 'Мої чати💬':
         bot.send_message(сallback.chat.id, 'Мої чати💬')
         bot.register_next_step_handler(сallback, post_keybord_buttons)
@@ -87,7 +84,25 @@ def add_post_to_db(message, post_name, post_details, post_price):
     # Сохраняем информацию о посте в базу данных
     customer_id = message.from_user.id
     post_to_db(post_name, post_price, post_details, customer_id)
-    bot.send_message(message.chat.id, f'Пост "{post_name}" з ціною {post_price} успішно створено!')
+    bot.send_message(message.chat.id, f'Пост "{post_name}" з ціною {post_price} грн успішно створено!')
+    bot.register_next_step_handler(message, post_keybord_buttons)
+
+
+def show_user_posts(message):
+    customer_id = message.from_user.id
+    information = get_my_posts(customer_id)
+    if information:
+        post_number = 1
+        for post in information:
+            if not post[3]:
+                post_str = f"🟢Пост #{post_number}\n"
+                post_str += f"Назва: {post[0]}\n"
+                post_str += f"Опис: {post[1]}\n"
+                post_str += f"Ціна: {post[2]} грн\n"
+                bot.send_message(message.chat.id, post_str)
+                post_number += 1
+    else:
+        bot.send_message(message.chat.id, "У вас немає постів🫤")
     bot.register_next_step_handler(message, post_keybord_buttons)
 
 
