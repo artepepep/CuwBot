@@ -17,14 +17,11 @@ btn3 = types.KeyboardButton('Нова Угода📄')
 btn4 = types.KeyboardButton('Мої пости🎒')
 btn5 = types.KeyboardButton('Мої чати💬')
 btn6 = types.KeyboardButton('Мої кошти💼')
-btn7 = types.KeyboardButton('Мій рейтинг🌟')
-btn8 = types.KeyboardButton('Список кидал🕵')
 
 keyboard.add(btn1)
 keyboard.add(btn2, btn3)
 keyboard.add(btn4, btn5)
-keyboard.add(btn6, btn7)
-keyboard.add(btn8)
+keyboard.add(btn6)
 
 @bot.message_handler(commands=['start'])
 def start(info):
@@ -39,6 +36,7 @@ def start(info):
 
     bot.send_message(info.chat.id, f'Привіт, {info.from_user.first_name} {info.from_user.last_name}', reply_markup=keyboard)
     bot.register_next_step_handler(info, post_keybord_buttons)
+
 
 def post_keybord_buttons(сallback):
     if сallback.text == 'Стати виконавцем👩‍💻':
@@ -56,8 +54,7 @@ def post_keybord_buttons(сallback):
         bot.send_message(сallback.chat.id, 'Мої кошти💼')
     elif сallback.text == 'Мій рейтинг🌟':
         bot.send_message(сallback.chat.id, 'Мій рейтинг🌟')
-    elif сallback.text == 'Список Порушників🕵':
-        bot.send_message(сallback.chat.id, 'Список Порушників🕵')
+
 
 # беру имя для поста
 def get_name_for_post(message):
@@ -73,6 +70,7 @@ def get_name_for_post(message):
 
     check_name_len()
 
+
 # беру описание поста
 def get_details_for_post(message, post_name):
 
@@ -87,6 +85,7 @@ def get_details_for_post(message, post_name):
 
     check_det_len()
 
+
 # беру цену для поста
 def get_price_for_post(message, post_name, post_details):
 
@@ -98,7 +97,8 @@ def get_price_for_post(message, post_name, post_details):
             bot.send_message(message.chat.id, '🔴Будь ласка, введіть коректну ціну за пост (у форматі числа)🔴')
             bot.register_next_step_handler(message, get_price_for_post, post_name, post_details)
 
-    check_price() 
+    check_price()
+
 
 # добавляю пост в базу данных
 def add_post_to_db(message, post_name, post_details, post_price):
