@@ -1,12 +1,16 @@
 import os
+import time
+import psycopg2
 
 import telebot
+from telebot import types
 from dotenv import load_dotenv
 
-from utils import generate_keyboard_buttons, main_buttons, tables_creation, post_to_db, get_my_posts
+from utils_profile import generate_keyboard_buttons, main_buttons, tables_creation, post_to_db, get_my_posts
 
 load_dotenv()
-SECRET_ID = os.getenv('TELEGRAM_BOT_ID')
+SECRET_ID = os.getenv('TELEGRAM_PROFILE_BOT_ID')
+PAYMENT_TOKEN = os.getenv('PUBLIC_PAYMENT_TOKEN')
 
 
 bot = telebot.TeleBot(SECRET_ID)
@@ -33,6 +37,8 @@ def post_keybord_buttons(сallback):
     elif сallback.text == 'Мої кошти💼':
         bot.send_message(сallback.chat.id, 'Мої кошти💼')
         bot.register_next_step_handler(сallback, post_keybord_buttons)
+    elif сallback.text == 'Оплатити💲':
+        pay_func(сallback)
 
 
 # беру имя для поста
@@ -83,7 +89,8 @@ def get_price_for_post(message, post_name, post_details):
 def add_post_to_db(message, post_name, post_details, post_price):
     # Сохраняем информацию о посте в базу данных
     customer_id = message.from_user.id
-    post_to_db(post_name, post_price, post_details, customer_id)
+    customer_username = message.from_user.username
+    post_to_db(post_name, post_price, post_details, customer_id, customer_username)
     bot.send_message(message.chat.id, f'Пост "{post_name}" з ціною {post_price} грн успішно створено!')
     bot.register_next_step_handler(message, post_keybord_buttons)
 
@@ -99,10 +106,16 @@ def show_user_posts(message):
                 post_str += f"Назва: {post[0]}\n"
                 post_str += f"Опис: {post[1]}\n"
                 post_str += f"Ціна: {post[2]} грн\n"
+                post_str += f"Писати @{post[4]}"
                 bot.send_message(message.chat.id, post_str)
                 post_number += 1
     else:
         bot.send_message(message.chat.id, "У вас немає постів🫤")
+    bot.register_next_step_handler(message, post_keybord_buttons)
+
+
+def pay_func(message):
+    bot.send_invoice(message.chat.id, 'Pay for post', 'Pay user: testuser', 'invoice', PAYMENT_TOKEN, 'USD', [types.LabeledPrice('Pay for user', 5 * 100)])
     bot.register_next_step_handler(message, post_keybord_buttons)
 
 

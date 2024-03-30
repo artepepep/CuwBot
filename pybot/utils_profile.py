@@ -46,7 +46,9 @@ def tables_creation():
                 price DECIMAL(10,2),
                 details VARCHAR(255),
                 customer_id VARCHAR(100),
-                status BOOLEAN
+                customer_username VARCHAR(255),
+                status BOOLEAN,
+                posted BOOLEAN
                 )''')
     conn.commit()
     cur.close()
@@ -54,7 +56,7 @@ def tables_creation():
 
 
 # сохраняем пост в нашу таблицу posts
-def post_to_db(post_name, post_price, post_details, customer_id):
+def post_to_db(post_name, post_price, post_details, customer_id, customer_username):
     conn = psycopg2.connect(
         dbname=db_name,
         user=db_user,
@@ -64,7 +66,7 @@ def post_to_db(post_name, post_price, post_details, customer_id):
     )
     cur = conn.cursor()
     # Вставляем запись о посте в таблицу posts
-    cur.execute("INSERT INTO posts (publication_name, price, details, status, customer_id) VALUES (%s, %s, %s, %s, %s)", (post_name, post_price, post_details, False, customer_id))
+    cur.execute("INSERT INTO posts (publication_name, price, details, status, customer_id, customer_username, posted) VALUES (%s, %s, %s, %s, %s, %s, %s)", (post_name, post_price, post_details, False, customer_id, customer_username, False))
     conn.commit()
     cur.close()
     conn.close()
@@ -81,7 +83,7 @@ def get_my_posts(customer_id):
     cur = conn.cursor()
     # Вставляем запись о посте в таблицу posts
     customer_id = str(customer_id)
-    cur.execute("SELECT publication_name, details, price, status FROM posts WHERE customer_id = %s", (customer_id,))
+    cur.execute("SELECT publication_name, details, price, status, customer_username FROM posts WHERE customer_id = %s", (customer_id,))
     rows = cur.fetchall()
 
     cur.close()
@@ -97,5 +99,6 @@ main_buttons = {
     "Новий Пост✅": 'new_post',
     "Мої пости🎒": 'my_posts',
     "Мої чати💬": 'my_chats',
-    "Мої кошти💼": 'my_cash'
+    "Мої кошти💼": 'my_cash',
+    "Оплатити💲": 'pay_cash',
 }
