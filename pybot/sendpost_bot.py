@@ -28,9 +28,9 @@ cur = conn.cursor()
 
 
 def add_post_to_channel(post):
-    message = f"Новый пост!\n\n{post[1]}\n\n{post[3]}\n\nЦена: {post[2]}\n\nАвтор: {post[5]}"
-    bot.send_message(chat_id=CHANNEL_ID, text=message)
-    print("sended")
+    user_link = f"<a href='tg://user?id={post[4]}'>{post[6]}</a>"
+    message = f"🟢Активно🟢\n\n<b>{post[1]}</b>\n\n{post[3]}\n\nЦіна: {post[2]}\n\nписати: {user_link}"
+    bot.send_message(chat_id=CHANNEL_ID, text=message, parse_mode='HTML')
 
 
 def check_new_posts():
