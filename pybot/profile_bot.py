@@ -1,6 +1,5 @@
 import os
 import telebot
-from telebot import types
 from dotenv import load_dotenv
 
 from utils_profile import generate_keyboard_buttons, main_buttons, prices, tables_creation, post_to_db, get_my_posts
@@ -58,8 +57,8 @@ def get_name_for_post(message):
 def get_details_for_post(message, post_name):
 
     def check_det_len(message):
-        if len(message.text) >= 255:
-            bot.send_message(message.chat.id, '🔴Будь ласка, введіть менше 255 символів🔴')
+        if len(message.text) >= 1000:
+            bot.send_message(message.chat.id, '🔴Будь ласка, введіть менше 1000 символів🔴')
             bot.register_next_step_handler(message, check_det_len)
         else:
             post_details = message.text

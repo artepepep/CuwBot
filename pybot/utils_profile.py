@@ -45,7 +45,7 @@ def tables_creation():
                 id SERIAL PRIMARY KEY,
                 publication_name VARCHAR(50),
                 price DECIMAL(10,2),
-                details VARCHAR(255),
+                details VARCHAR(1000),
                 customer_id VARCHAR(100),
                 customer_username VARCHAR(255),
                 customer_fn VARCHAR(255),

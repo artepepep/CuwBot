@@ -37,6 +37,7 @@ def check_new_posts():
     cur.execute("SELECT * FROM posts WHERE posted = false")
     new_posts = cur.fetchall()
     for post in new_posts:
+        time.sleep(3)
         add_post_to_channel(post)
         cur.execute("UPDATE posts SET posted = true WHERE id = %s", (post[0],))
         conn.commit()
